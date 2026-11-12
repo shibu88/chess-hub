@@ -1,0 +1,15 @@
+{
+  "appId": "com.shibu88.chesshub",
+  "appName": "Chess Hub",
+  "webDir": "dist",
+  "backgroundColor": "#0f1420",
+  "android": {
+    "backgroundColor": "#0f1420"
+  },
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": ["google.com"]
+    }
+  }
+}

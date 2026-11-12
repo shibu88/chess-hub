@@ -1,0 +1,55 @@
+rules_version = '2';
+
+// Chess Hub: a user may read and write only their own data, and only with a
+// verified email (Google accounts are verified). Everything else is denied.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function verified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function owner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+
+      // Saved games.
+      match /games/{gameId} {
+        allow read, delete: if verified() && owner(uid);
+        allow create, update: if verified() && owner(uid) && validGame();
+      }
+
+      // Training progress (single doc) and app settings (single doc).
+      match /training/{doc} {
+        allow read: if verified() && owner(uid);
+        allow write: if verified() && owner(uid) && request.resource.data.size() < 200;
+      }
+      match /settings/{doc} {
+        allow read: if verified() && owner(uid);
+        allow write: if verified() && owner(uid) && request.resource.data.size() < 200;
+      }
+
+      // No other documents directly under the user.
+      match /{other=**} {
+        allow read, write: if false;
+      }
+    }
+
+    // A saved game: required fields, right types, sane sizes (keep well under 200 KB).
+    function validGame() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['id', 'pgn', 'source'])
+        && d.id is string && d.id.size() < 200
+        && d.pgn is string && d.pgn.size() < 120000
+        && d.source is string && d.source.size() < 20
+        && (!('result' in d) || d.result is string)
+        && d.size() < 40;
+    }
+
+    // Deny all other paths.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

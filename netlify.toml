@@ -1,0 +1,39 @@
+# Netlify static hosting for Chess Hub.
+# No serverless functions, no COOP/COEP headers (would break the Google sign-in popup).
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback. force defaults to false, so real files (incl. /engine/*) are served first.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers + CSP on every response (the engine worker gets these too).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = """
+      default-src 'self';
+      base-uri 'self';
+      object-src 'none';
+      form-action 'self';
+      script-src 'self' 'wasm-unsafe-eval' https://apis.google.com;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https://*.googleusercontent.com https://www.google-analytics.com;
+      font-src 'self';
+      worker-src 'self' blob:;
+      frame-src 'self' https://*.firebaseapp.com https://*.web.app https://accounts.google.com https://apis.google.com;
+      connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firestore.googleapis.com wss://*.firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseinstallations.googleapis.com https://www.googleapis.com https://www.google-analytics.com"""
+
+# Long, immutable cache for the engine files (fixed names, rarely change).
+[[headers]]
+  for = "/engine/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

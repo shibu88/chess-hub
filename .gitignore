@@ -1,0 +1,25 @@
+# dependencies & build output
+node_modules/
+dist/
+
+# secrets & local env
+.env
+.env.*.local
+
+# never commit raw/source data or references (CLAUDE.md)
+data-raw/
+samples/
+reference/
+
+# tooling / local
+.claude/
+tasks/
+test-results/
+playwright-report/
+.DS_Store
+
+# Android (Capacitor, Phase 6)
+android/app/build/
+android/build/
+android/.gradle/
+android/app/google-services.json
