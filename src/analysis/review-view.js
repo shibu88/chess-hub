@@ -10,6 +10,7 @@ import { Engine } from '../shared/engine.js';
 import { loadOpenings } from './openings.js';
 import { analyseGame, getDepth, DEPTHS } from './engine-analysis.js';
 import { LABELS } from './review.js';
+import { fmtEval } from './eval-format.js';
 import { saveGame } from '../store/index.js';
 import { reviewToRecord, downloadPgn, downloadJson } from './pgn-export.js';
 import { isNative } from '../app/platform.js';
@@ -35,13 +36,6 @@ const svg = (tag, attrs, kids = []) => {
   return n;
 };
 const uciMove = (uci) => ({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci.length > 4 ? uci[4] : undefined });
-
-function fmtEval(cp) {
-  if (cp >= 1000) return '+10+';
-  if (cp <= -1000) return '−10+';
-  const v = (Math.abs(cp) / 100).toFixed(1);
-  return (cp >= 0 ? '+' : '−') + v;
-}
 
 /**
  * @param {HTMLElement} container
@@ -269,6 +263,7 @@ export function createReviewView(container, opts = {}) {
     }, [
       el('span', { class: 'mv-dot', dataset: { label: m.label } }),
       ` ${m.san}${st.tag}`,
+      el('span', { class: 'mv-eval' + (m.scoreWhiteCp < 0 ? ' neg' : ''), text: fmtEval(m.scoreWhiteCp) }),
     ]);
   }
 
@@ -304,6 +299,7 @@ export function createReviewView(container, opts = {}) {
     const header = el('div', { class: 'md-head' }, [
       el('span', { class: 'md-label', dataset: { label: m.label } , text: m.label }),
       el('span', { class: 'md-san', text: `${m.moverColor === 'w' ? 'White' : 'Black'} played ${m.san}` }),
+      el('span', { class: 'md-eval' + (m.scoreWhiteCp < 0 ? ' neg' : ''), text: fmtEval(m.scoreWhiteCp), title: 'Evaluation (White’s view)' }),
     ]);
     const bestLine = (m.bestSan && m.bestSan !== m.san)
       ? el('p', { class: 'md-best muted', text: `Best was ${m.bestSan}.` })

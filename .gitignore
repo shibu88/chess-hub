@@ -16,6 +16,7 @@ reference/
 tasks/
 test-results/
 playwright-report/
+.netlify/
 .DS_Store
 
 # Android (Capacitor, Phase 6)

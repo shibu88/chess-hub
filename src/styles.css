@@ -117,7 +117,7 @@ a { color: inherit; }
 .stub, .about { max-width: 640px; }
 .stub h1, .about h1 { font-size: 1.5rem; }
 .about h2 { font-size: 1.15rem; margin-top: 22px; }
-.about a { color: var(--accent); }
+.about a:not(.btn) { color: var(--accent); }
 .credits { padding-left: 18px; }
 .credit { margin: 8px 0; line-height: 1.5; }
 .stub-msg { color: var(--muted); font-size: 1.1rem; }
@@ -505,6 +505,11 @@ button.danger { border-color: var(--danger); color: var(--danger); background: #
 .md-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .md-label { font-weight: 800; padding: 2px 8px; border-radius: 6px; color: #0c1511; }
 .md-san { font-weight: 600; }
+/* White-view evaluation shown on the detail card and after each move in the list. */
+.md-eval { margin-left: auto; font-weight: 700; font-family: ui-monospace, Consolas, monospace; color: var(--text); }
+.mv-eval { margin-left: auto; font-size: .82em; color: var(--muted); }
+.mv.current .mv-eval { color: var(--accent-text); }
+.md-eval.neg, .mv-eval.neg { color: #e5806b; }
 .md-best { margin: 8px 0; }
 .md-lines { display: flex; flex-direction: column; gap: 6px; }
 .pv-line { display: flex; flex-wrap: wrap; gap: 4px; align-items: baseline; font-family: ui-monospace, Consolas, monospace; }

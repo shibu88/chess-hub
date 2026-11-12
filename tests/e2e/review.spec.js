@@ -33,6 +33,12 @@ test('ANALYZE runs a full review and shows the results', async ({ page }) => {
   await page.click('.review-moves .mv:has-text("g4")');
   await expect(page.locator('.move-detail')).toContainText('played');
 
+  // Each move shows a White-view eval (e.g. +0.84, −1.02, or +10+ for a mate),
+  // on the detail card and in the move list.
+  const evalRe = /^[+−](\d+\.\d{2}|10\+)$/;
+  await expect(page.locator('.move-detail .md-eval')).toHaveText(evalRe);
+  await expect(page.locator('.review-moves .mv-eval').first()).toHaveText(evalRe);
+
   // Keyboard navigation works.
   await page.keyboard.press('Home');
   await expect(page.locator('.review-moves .mv.current')).toHaveText(/f3/);
